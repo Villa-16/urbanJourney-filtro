@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Filtro por Tipos</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./styles/filtro.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <h1 class="text-center" id="titulo">Urban Journey</h1>
+    <div id="filtro" class="text-center">
+        <form>
+            <h4>Busqueda por Lugares</h4>
+            <select id="type" name="type">
+                <option value="" disabled selected>Seleccione un tipo</option>
+                <option value="museum">Museos</option>
+                <option value="park">Actividades al aire libre</option>
+                <option value="tourist_attraction">Actividades de recreacion</option>
+                <option value="restaurant">Restaurantes</option>
+                <option value="bar">Vida Nocturna</option>
+                <option value="church">Iglesias</option>
+                <option value="supermarket">Alimentos</option>
+                <option value="shopping_mall">Shopping</option>
+                <option value="bus_station">Transporte</option>
+                <option value="bank">Servicios</option>
+                <option value="hospital">Salud</option>
+                <option value="lodging">Hospedaje</option>
+                <option value="book_store">Otros...</option>
+            </select>
+        </form>
+    </div>
+    <div id="map">
+
+    </div>
+    <script type="text/javascript">
+        var map;
+        var service;
+        var infowindow;
+        var coordenades = {
+            lat: 20.6777567,
+            lng: -103.3410167
+        }
+        var tipos_Lugares = {
+            museos: ['museum', 'art_gallery'],
+            aire_Libre: ['amusement_park', 'park', 'zoo'],
+            recreacion: ['bowling_alley', 'movie_theater', 'spa', 'stadium', 'tourist_attraction'],
+            restaurantes: ['cafe', 'restaurant'],
+            vida_Nocturna: ['bar', 'casino', 'night_club'],
+            iglesias: ['church', 'hindu_temple', 'mosque', 'synagogue'],
+            compra_Alimento: ['bakery', 'convenience_store', 'grocery_or_supermarket', 'supermarket'],
+            compra_Otros: ['clothing_store', 'department_store', 'electronics_store', 'shopping_mall', 'shoe_store', 'liquor_store'],
+            transporte: ['bus_station', 'airport', 'car_rental', 'light_rail_station', 'subway_station', 'train_station'],
+            servicios: ['bank', 'embassy', 'police', 'post_office', 'lawyer'],
+            salud: ['doctor', 'hospital', 'pharmacy', 'drugstore', 'dentist', 'veterinary_care', 'physiotherapist'],
+            hospedaje: ['lodging'],
+            otros: ['book_store', 'gym', 'laundry', 'florist']
+        }
+
+
+        function initMap() {
+
+            var options = {
+                zoom: 16,
+                center: { lat: 20.6777567, lng: -103.3410167 },
+                styles: [
+                    {
+                        "featureType": "administrative",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": "-100"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.province",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": -100
+                            },
+                            {
+                                "lightness": 65
+                            },
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": -100
+                            },
+                            {
+                                "lightness": "50"
+                            },
+                            {
+                                "visibility": "simplified"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": "-100"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "simplified"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "lightness": "30"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.local",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "lightness": "40"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": -100
+                            },
+                            {
+                                "visibility": "simplified"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "hue": "#ffff00"
+                            },
+                            {
+                                "lightness": -25
+                            },
+                            {
+                                "saturation": -97
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "labels",
+                        "stylers": [
+                            {
+                                "lightness": -25
+                            },
+                            {
+                                "saturation": -100
+                            }
+                        ]
+                    }
+                ]
+
+            }
+            var map = new google.maps.Map(document.getElementById('map'), options);
+            var localization = new google.maps.LatLng(options.center);
+            infowindow = new google.maps.InfoWindow();
+
+
+            var select = document.getElementById('type');
+            select.addEventListener('change', function () {
+                var selectedOption = this.options[select.selectedIndex];
+                var types = selectedOption.value;
+                var request = { //REQUICITOS PARA LA BUSUEDA POR TIPOS.
+                    location: localization, //locacion deseada
+                    radius: '250', //Radio a partir de'location'
+                    type: types //typo de lugar definido 'types' USANDO EL OBJETO JSON.
+                };
+
+
+                service = new google.maps.places.PlacesService(map);
+                service.nearbySearch(request, callback);
+
+
+
+                function callback(results, status) {
+                    var lugaresMaximos = 5; //para establecer numero de lugares maximos
+
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                        for (var i = 0; i < lugaresMaximos; i++) { //results.length
+                            var place = results[i];
+                            createMarker(results[i]);
+                        }
+                    }
+                }
+
+            });
+
+
+
+            function createMarker(place) {
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location,
+                    animation: google.maps.Animation.DROP
+                });
+
+                google.maps.event.addListener(marker, 'click', function () {
+                    infowindow.setContent(place.name);
+                    map.setZoom(18);
+                    infowindow.open(map, this);
+                    var markerPosition = marker.getPosition();
+                    console.log(markerPosition.latitude);
+                    console.log(markerPosition.longitude);
+                });
+            }
+
+        }
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAomYdf0G4S_QZ6TE6puT5x8eRcRaHXKo0&libraries=places&callback=initMap"></script>
+</body>
+
+</html>
